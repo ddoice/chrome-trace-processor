@@ -1,0 +1,63 @@
+
+name: Push master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    name: release
+    needs: [tests-e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Clone repo
+        run: |
+          git clone --depth 1 git@github.com:ChromeDevTools/devtools-frontend.git
+
+      - name: Add deps to package.json
+        working-directory: devtools-frontend
+        run: |
+          cat package-lock.json | jq .packages | jq 'to_entries|.[0].value' >fix-package.json
+          jq -s '.[0] * .[1]' package.json fix-package.json > package.json
+
+      - name: Install deps
+        working-directory: devtools-frontend
+        run: |
+          npm ci
+          npm add -D webpack webpack-cli
+
+      - name: Copy config files
+        run: |
+          cp webpack.config.js devtools-frontend/
+          cp tsconfig.base.json devtools-frontend/
+
+      - name: Generate dcheck file
+        working-directory: devtools-frontend
+        run: |
+          node front_end/core/platform/generate-dcheck.js front_end/core/platform/
+
+      - name: Delete files
+        working-directory: devtools-frontend
+        run: |
+          rm front_end/core/platform/dcheck.d.ts
+
+      - name: Build
+        working-directory: devtools-frontend
+        run: |
+          npx webpack 
+
+      - name: Test build
+        working-directory: devtools-frontend
+        run: |
+          node dist/processor.js
