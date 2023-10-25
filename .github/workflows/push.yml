@@ -39,7 +39,6 @@ jobs:
 
       - name: Copy config files
         run: |
-          ls -la
           cp webpack-config.js devtools-frontend/
           cp tsconfig.base.json devtools-frontend/
 
@@ -56,6 +55,7 @@ jobs:
       - name: Build
         working-directory: devtools-frontend
         run: |
+          ls -la
           npx webpack 
 
       - name: Test build
