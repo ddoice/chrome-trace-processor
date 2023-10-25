@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone repo
         run: |
-          git clone --depth 1 git@github.com:ChromeDevTools/devtools-frontend.git
+          git clone --depth 1 https://github.com/ChromeDevTools/devtools-frontend.git
 
       - name: Add deps to package.json
         working-directory: devtools-frontend
