@@ -35,12 +35,12 @@ jobs:
         working-directory: devtools-frontend
         run: |
           npm ci
-          npm add -D webpack webpack-cli
+          npm add -D webpack webpack-cli ts-loader
 
       - name: Copy config files
         run: |
-          cp webpack-config.js devtools-frontend/
-          cp tsconfig.base.json devtools-frontend/
+          cp webpack.config.js devtools-frontend/
+          cp tsconfig.base.json devtools-frontend/config/typescript/tsconfig.base.json
 
       - name: Generate dcheck file
         working-directory: devtools-frontend
